@@ -1,18 +1,8 @@
 #ifndef MESH_H
 #define MESH_H
 #include "vector.h"
-#include "camera.h"
-#include "colors.h"
+#include "lightmodel.h"
 
-//TODO: put this in path_trace.h but its causing include errors right now
-typedef struct {
-    Color3 base_color;
-    Color3 emissive;
-    double emission_strength;
-    double specular;
-    Color3 specular_color;
-    double roughness;
-} PathTracedMaterial;
 
 typedef struct {
     Vector3 position;
@@ -27,6 +17,9 @@ typedef struct {
     Vector3 normal;
 } Triangle;
 
+typedef struct {
+
+} cachedMesh;
 
 typedef struct {
     int num_tris;
@@ -34,14 +27,17 @@ typedef struct {
     int num_vertices;
     Vertex* vertices;
 
+    Vector3 center;
+    Vector3 scale;
+
     Vector3 bounding_box_max;
     Vector3 bounding_box_min;
 
-    bool shade_smooth;
-    PathTracedMaterial material;
-
     double transform[4][4];
     double inverse_transform[4][4];
+
+    PhongMaterial material;
+    double roughness;
 
 } Mesh;
 
@@ -62,10 +58,9 @@ void load_mesh_from_ply(Mesh* mesh, char* filename);
 void delete_mesh(Mesh mesh);
 
 /**
- * @brief Translates a mesh's transform by the given translation.
+ * @brief Translates a mesh's transform by its transform matrix.
  * 
  * @param mesh The mesh to be translated
- * @param translation The translation vector to use
  */
 void translate_mesh(Mesh* mesh, Vector3 translation);
 
@@ -102,26 +97,40 @@ void rotate_mesh_y_degrees(Mesh* mesh, double degrees);
 void rotate_mesh_z_degrees(Mesh* mesh, double degrees);
 
 /**
+ * @brief Applies a transform to a mesh
+ * 
+ * @param mesh the mesh to be transformed
+
+ */
+void apply_mesh_transform(Mesh* mesh);
+
+/**
  * @brief Computes the bounding box for a given mesh
  * 
  * @param mesh 
  */
 void compute_mesh_bounds(Mesh* mesh);
- 
- /**
-  * @brief Computes and sets the normals for all faces in the mesh
-  * 
-  * @param mesh The mesh whose normals will be computed
-  */
+
+/**
+ * @brief Computes the face normals for a given mesh
+ * 
+ * @param mesh 
+ */
+
 void compute_face_normals(Mesh* mesh);
 
 /**
- * @brief Draws a mesh wireframe to the screen
+ * @brief Prints the mesh to the console
  * 
- * @param mesh The mesh to draw
- * @param cam The camera from which to draw the mesh
- * @param width The width of the screen
- * @param height the height of the screen
+ * @param mesh 
  */
-void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height);
+void print_mesh(Mesh mesh);
+
+/**
+ * @brief Returns a pointer to a mesh loaded from a file
+ * 
+ * @param filename 
+ * @return Mesh* 
+ */
+Mesh* get_mesh(char* filename);
 #endif

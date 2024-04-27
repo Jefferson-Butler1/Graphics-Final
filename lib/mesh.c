@@ -10,8 +10,8 @@
 #include "FPToolkit.h"
 #include "colors.h"
 #include "M3d_matrix_tools.h"
-#include "path_trace.h"
 #include "trig.h"
+#include "matrix.h"
 
 const int BUFFER_SIZE = 256;
 
@@ -222,6 +222,27 @@ void compute_mesh_bounds(Mesh* mesh){
     mesh->bounding_box_min = min;
 }
 
+/**
+ * Applies a transformation matrix to a mesh, updating both the vertex positions
+ * and the inverse transformation matrix.
+ * 
+ * @param mesh The mesh to transform.
+ * @param transform The 4x4 transformation matrix to apply.
+ */
+void apply_mesh_transform(Mesh* mesh) {
+    if(mesh == NULL) return;
+    for (int i = 0; i < mesh->num_vertices; i++) {
+            mesh->vertices[i].position = mat4_mult_point(mesh->vertices[i].position, mesh ->transform);
+    }
+    //reset the transformation matrix
+    M3d_make_identity(mesh->transform);
+    //reset the inverse transformation matrix
+    M3d_make_identity(mesh->inverse_transform);
+
+    //recompute normals and bounds
+    compute_face_normals(mesh);
+    compute_mesh_bounds(mesh);
+}
 
 void compute_face_normals(Mesh* mesh){
     for(int i = 0; i < mesh->num_tris; i++){
@@ -233,23 +254,55 @@ void compute_face_normals(Mesh* mesh){
     }
 }
 
-//This doesn't account for clipping but It doesnt really matters
-void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height){
-    for(int i = 0; i < mesh.num_tris; i++){
-        Triangle tri = mesh.tris[i];
-        Vector2 a, b, c;
+//currently requires path tracing
+// //This doesn't account for clipping but It doesnt really matters
+// void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height){
+//     for(int i = 0; i < mesh.num_tris; i++){
+//         Triangle tri = mesh.tris[i];
+//         Vector2 a, b, c;
 
-        point_to_window(&a, tri.a->position, cam, width, height);
-        point_to_window(&b, tri.b->position, cam, width, height);
-        point_to_window(&c, tri.c->position, cam, width, height);
+//         point_to_window(&a, tri.a->position, cam, width, height);
+//         point_to_window(&b, tri.b->position, cam, width, height);
+//         point_to_window(&c, tri.c->position, cam, width, height);
         
-        Vector3 triangle_center = vec3_scale(vec3_add(vec3_add(tri.a->position, tri.b->position), tri.c->position), 1.0 / 3);
-        if(vec3_distance(triangle_center, cam.eye) > cam.focal_length){
-            G_rgb(SPREAD_COL3(vec3_scale(mesh.material.base_color, 0.5)));
-        }
-        else {
-            G_rgb(SPREAD_COL3(mesh.material.base_color));
-        }
-        G_triangle(SPREAD_VEC2(a), SPREAD_VEC2(b), SPREAD_VEC2(c));
+//         Vector3 triangle_center = vec3_scale(vec3_add(vec3_add(tri.a->position, tri.b->position), tri.c->position), 1.0 / 3);
+//         if(vec3_distance(triangle_center, cam.eye) > cam.focal_length){
+//             G_rgb(SPREAD_COL3(vec3_scale(mesh.material.base_color, 0.5)));
+//         }
+//         else {
+//             G_rgb(SPREAD_COL3(mesh.material.base_color));
+//         }
+//         G_triangle(SPREAD_VEC2(a), SPREAD_VEC2(b), SPREAD_VEC2(c));
+//     }
+// }
+
+void print_mesh(Mesh mesh){
+    printf("Vertices:\n");
+    for(int i = 0; i < mesh.num_vertices; i++){
+        printf("Vertex %d: %f %f %f\n", i, mesh.vertices[i].position.x, mesh.vertices[i].position.y, mesh.vertices[i].position.z);
     }
+    printf("Triangles:\n");
+    for(int i = 0; i < mesh.num_tris; i++){
+        printf("Triangle %d: \n", i);
+        vec3_print(mesh.tris[i].a->position);
+        vec3_print(mesh.tris[i].b->position);
+        vec3_print(mesh.tris[i].c->position);
+        vec3_print(mesh.tris[i].normal);
+    }
+}
+
+
+Mesh* get_mesh(char* filename){
+    Mesh* mesh = (Mesh*)malloc(sizeof(Mesh));
+    if(mesh == NULL) goto MEM_ERROR;
+    load_mesh_from_ply(mesh, filename);
+    compute_face_normals(mesh);
+    compute_mesh_bounds(mesh);
+    //matricies
+    M3d_make_identity(mesh->transform);
+    M3d_make_identity(mesh->inverse_transform);
+    return mesh;
+    MEM_ERROR:
+    fprintf(stderr, "Failed to allocate sufficient memory for mesh\n");
+    exit(1);
 }
