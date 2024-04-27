@@ -7,8 +7,6 @@ int G_init_graphics(double width, double height);
 
 int G_wait_key();
 
-int G_wait_click(double p[2]);
-
 int G_no_wait_key();
 
 extern int (*G_rgb)(double r, double g, double b);
@@ -26,6 +24,8 @@ extern int (*G_clear)();
 extern int (*G_circle)(double x, double y, double radius);
 
 extern int (*G_fill_circle)(double x, double y, double radius);
+
+int (* G_triangle) (double x0, double y0, double x1, double y1, double x2, double y2) ; 
 
 extern int (*G_point)(double x, double y);
 

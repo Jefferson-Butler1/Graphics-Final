@@ -104,11 +104,55 @@ Vector3 vec3_cross_prod(Vector3 a, Vector3 b){
     return result;
 }
 
+double vec3_distance(Vector3 a, Vector3 b){
+    return vec3_magnitude(vec3_sub(b, a));
+}
+
+Vector3 vec3_lerp(Vector3 a, Vector3 b, double t){
+    Vector3 result;
+    result.x = a.x + (b.x - a.x) * t;
+    result.y = a.y + (b.y - a.y) * t;
+    result.z = a.z + (b.z - a.z) * t;
+    return result;
+}
+
 Vector3 vec3_reflection(Vector3 incoming, Vector3 normal){
     Vector3 result;
     double dot_prod = vec3_dot_prod(incoming, normal);
     Vector3 scaled_normal = vec3_scale(normal, 2 * dot_prod);
     result = vec3_sub(incoming, scaled_normal);
+    return result;
+}
+
+Vector3f vec3_to_vec3f(Vector3 v){
+    return (Vector3f){
+        .x=(float)v.x,
+        .y=(float)v.y,
+        .z=(float)v.z,
+    };
+}
+
+Vector3 vec3f_to_vec3(Vector3f v){
+    return (Vector3){
+        .x=(double)v.x,
+        .y=(double)v.y,
+        .z=(double)v.z,
+    };
+}
+
+Vector3f vec3f_add(Vector3f a, Vector3f b){
+    Vector3f result;
+    result.x = a.x + b.x;
+    result.y = a.y + b.y;
+    result.z = a.z + b.z;
+    return result;
+}
+
+Vector3f vec3f_scale(Vector3f v, double scale){
+    Vector3f result;
+    result.x = v.x * scale;
+    result.y = v.y * scale;
+    result.z = v.z * scale;
     return result;
 }
 

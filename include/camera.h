@@ -15,6 +15,9 @@ typedef struct Camera {
     Vector3 coi;
     Vector3 up;
     double half_fov_degrees;
+    double focal_length;
+    double depth_of_field;
+    
     double near_clip_plane;
     double far_clip_plane;
     double view_matrix[4][4];
@@ -124,12 +127,5 @@ void rotate_camera_z_degrees(Camera* cam, double z_degrees,  enum TransformScope
 bool is_visible_to_camera(Camera cam, Vector3 point);
 
 
-/**
- * Retrieves the film distance of the camera based on its field of view.
- *
- * @param cam The camera object.
- * @return the distance from the camera eye to the film
- */
-double get_film_distance(Camera cam);
 
 #endif

@@ -8,8 +8,9 @@
 #include "trig.h"
 #include "lightmodel.h"
 
-#define SHOW_WORLD_DIRECTION 1
-#define SHOW_MISSES 1
+bool SHOW_WORLD_DIRECTION = true;
+void invert_show_world_direction(){ SHOW_WORLD_DIRECTION = !SHOW_WORLD_DIRECTION; }
+#define SHOW_MISSES 0
 
 int MAX_BOUNCES = 6;
 
@@ -136,6 +137,7 @@ bool raytrace  (RayHitInfo* out, Ray ray, int depth,
     Vector3 tip = vec3_add(ray.origin, ray.direction);
     if(!skipMeshes && num_meshes > 0){
         for(int m = 0; m < num_meshes; m++){
+            if(meshes[m].hidden) continue;
             Mesh mesh = meshes[m];
             // printf("Mesh %d\tintersects: %d\n", m, intersects_bounding_box(mesh, ray));
             if(!intersects_bounding_box(mesh, ray)) continue;

@@ -22,6 +22,8 @@ typedef struct {
 } cachedMesh;
 
 typedef struct {
+    bool hidden;
+
     int num_tris;
     Triangle* tris;
     int num_vertices;
@@ -133,4 +135,28 @@ void print_mesh(Mesh mesh);
  * @return Mesh* 
  */
 Mesh* get_mesh(char* filename);
+
+/**
+ * @brief Draws a mesh wireframe to the screen
+ * 
+ * @param mesh The mesh to draw
+ * @param cam The camera from which to draw the mesh
+ * @param width The width of the screen
+ * @param height the height of the screen
+ */
+void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height);
+
+/**
+ * @brief Draws the skeletons of all the hidden meshes
+ * 
+ * @param meshes The array of meshes to draw
+ * @param numMeshes The number of meshes in the array
+ * @param cam The camera from which to draw the meshes
+ * @param width The width of the screen
+ * @param height The height of the screen
+ * 
+*/
+
+void show_hidden_meshes(Mesh* meshes, int numMeshes, Camera cam, int width, int height);
+
 #endif

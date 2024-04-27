@@ -45,5 +45,8 @@ bool raytrace(RayHitInfo* out, Ray ray, int depth,
                 Mesh* meshes, int num_meshes, bool skipMeshes,
                 PhongLight* lights, int num_lights);
 
-
+/**
+ * @brief exactly what you think
+*/
+void invert_show_world_direction();
 #endif

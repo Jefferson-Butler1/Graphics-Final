@@ -254,27 +254,34 @@ void compute_face_normals(Mesh* mesh){
     }
 }
 
-//currently requires path tracing
-// //This doesn't account for clipping but It doesnt really matters
-// void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height){
-//     for(int i = 0; i < mesh.num_tris; i++){
-//         Triangle tri = mesh.tris[i];
-//         Vector2 a, b, c;
+//This doesn't account for clipping but It doesnt really matters
+void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height){
+    for(int i = 0; i < mesh.num_tris; i++){
+        Triangle tri = mesh.tris[i];
+        Vector2 a, b, c;
 
-//         point_to_window(&a, tri.a->position, cam, width, height);
-//         point_to_window(&b, tri.b->position, cam, width, height);
-//         point_to_window(&c, tri.c->position, cam, width, height);
+        point_to_window(&a, tri.a->position, cam, width, height);
+        point_to_window(&b, tri.b->position, cam, width, height);
+        point_to_window(&c, tri.c->position, cam, width, height);
         
-//         Vector3 triangle_center = vec3_scale(vec3_add(vec3_add(tri.a->position, tri.b->position), tri.c->position), 1.0 / 3);
-//         if(vec3_distance(triangle_center, cam.eye) > cam.focal_length){
-//             G_rgb(SPREAD_COL3(vec3_scale(mesh.material.base_color, 0.5)));
-//         }
-//         else {
-//             G_rgb(SPREAD_COL3(mesh.material.base_color));
-//         }
-//         G_triangle(SPREAD_VEC2(a), SPREAD_VEC2(b), SPREAD_VEC2(c));
-//     }
-// }
+        Vector3 triangle_center = vec3_scale(vec3_add(vec3_add(tri.a->position, tri.b->position), tri.c->position), 1.0 / 3);
+        if(vec3_distance(triangle_center, cam.eye) > cam.focal_length){
+            G_rgb(SPREAD_COL3(vec3_scale(mesh.material.base_color, 0.5)));
+        }
+        else {
+            G_rgb(SPREAD_COL3(mesh.material.base_color));
+        }
+        G_triangle(SPREAD_VEC2(a), SPREAD_VEC2(b), SPREAD_VEC2(c));
+    }
+}
+
+void show_hidden_meshes(Mesh* meshes, int num_meshes, Camera cam, int width, int height){
+    for(int i = 0; i < num_meshes; i++){
+        if(meshes[i].hidden){
+            debug_draw_mesh(meshes[i], cam, width, height);
+        }
+    }
+}
 
 void print_mesh(Mesh mesh){
     printf("Vertices:\n");
@@ -301,6 +308,7 @@ Mesh* get_mesh(char* filename){
     //matricies
     M3d_make_identity(mesh->transform);
     M3d_make_identity(mesh->inverse_transform);
+    mesh->hidden = false;
     return mesh;
     MEM_ERROR:
     fprintf(stderr, "Failed to allocate sufficient memory for mesh\n");
