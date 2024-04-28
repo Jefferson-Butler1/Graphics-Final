@@ -168,6 +168,7 @@ bool raytrace  (RayHitInfo* out, Ray ray, int depth,
                     RayHitInfo reflections;
                     bool hit = raytrace(&reflections, reflection_ray, depth - 1, objs, num_objs, meshes, num_meshes, false, lights, num_lights);
                     Color3 color = phong_lighting_eye(out->location, out->normal, ray.origin, mesh.material, lights, num_lights);
+
                     out->color = vec3_add(
                                     vec3_scale(color, mesh.roughness),
                                     vec3_scale(

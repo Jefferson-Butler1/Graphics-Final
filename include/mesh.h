@@ -17,9 +17,6 @@ typedef struct {
     Vector3 normal;
 } Triangle;
 
-typedef struct {
-
-} cachedMesh;
 
 typedef struct {
     bool hidden;
@@ -158,5 +155,14 @@ void debug_draw_mesh(Mesh mesh, Camera cam, int width, int height);
 */
 
 void show_hidden_meshes(Mesh* meshes, int numMeshes, Camera cam, int width, int height);
+
+/**
+ * @brief Inverts the normals of a mesh
+ * 
+ * @param mesh The mesh to invert
+ */
+void invert_vertex_normals(Mesh* mesh);
+
+void compute_plane_normals(Mesh* mesh);
 
 #endif

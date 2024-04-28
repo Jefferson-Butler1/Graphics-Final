@@ -243,7 +243,15 @@ void apply_mesh_transform(Mesh* mesh) {
     compute_face_normals(mesh);
     compute_mesh_bounds(mesh);
 }
+void compute_plane_normals(Mesh* plane){
+    for(int i = 0; i < plane->num_tris; i++){
+        Triangle tri = plane->tris[i];
+        Vector3 edge_1 = vec3_sub(tri.b->position, tri.a->position);
+        Vector3 edge_2 = vec3_sub(tri.c->position, tri.a->position);
 
+        plane->tris[i].normal = vec3_scale(vec3_normalized(vec3_cross_prod(edge_1, edge_2)), -1);
+    }
+}
 void compute_face_normals(Mesh* mesh){
     for(int i = 0; i < mesh->num_tris; i++){
         Triangle tri = mesh->tris[i];
@@ -251,6 +259,12 @@ void compute_face_normals(Mesh* mesh){
         Vector3 edge_2 = vec3_sub(tri.c->position, tri.a->position);
 
         mesh->tris[i].normal = vec3_normalized(vec3_cross_prod(edge_1, edge_2));
+    }
+}
+
+void invert_vertex_normals(Mesh* mesh){
+    for(int i = 0; i < mesh->num_vertices; i++){
+        mesh->vertices[i].normal = vec3_scale(mesh->vertices[i].normal, -1);
     }
 }
 
