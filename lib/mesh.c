@@ -94,18 +94,24 @@ void load_mesh_from_ply(Mesh* mesh, char* filename){
         token = strtok(line, "\n\r\t ");
         if(!strcmp(token, "comment")) continue;
         mesh->vertices[i].position.x = strtod(token, NULL);
+        mesh->vertices[i].position_static.x = mesh->vertices[i].position.x;
         token = strtok(NULL, "\n\r\t ");
         mesh->vertices[i].position.y = strtod(token, NULL);
+        mesh->vertices[i].position_static.y = mesh->vertices[i].position.y;
         token = strtok(NULL, "\n\r\t ");
         mesh->vertices[i].position.z = strtod(token, NULL);
+        mesh->vertices[i].position_static.z = mesh->vertices[i].position.z;
         
         //Read normals
         token = strtok(NULL, "\n\r\t ");
         mesh->vertices[i].normal.x = strtod(token, NULL);
+        mesh->vertices[i].normal_static.x = mesh->vertices[i].normal.x;
         token = strtok(NULL, "\n\r\t ");
         mesh->vertices[i].normal.y = strtod(token, NULL);
+        mesh->vertices[i].normal_static.y = mesh->vertices[i].normal.y;
         token = strtok(NULL, "\n\r\t ");
         mesh->vertices[i].normal.z = strtod(token, NULL);
+        mesh->vertices[i].normal_static.z = mesh->vertices[i].normal.z;
         i++;
     }
     i = 0;

@@ -65,4 +65,6 @@ void draw_light(PhongLight light, Camera cam, int width, int height);
  */
 void draw_lights(PhongLight* lights, int num_lights, Camera cam, int width, int height);
 
+
+
 #endif

@@ -9,6 +9,7 @@
 #include "lightmodel.h"
 
 bool SHOW_WORLD_DIRECTION = true;
+bool SHOW_WORLD_DIRECTION_MISSES = false;
 void invert_show_world_direction(){ SHOW_WORLD_DIRECTION = !SHOW_WORLD_DIRECTION; }
 #define SHOW_MISSES 0
 
@@ -101,7 +102,7 @@ void raytrace_scene(int width, int height, Camera cam,
                 .origin=cam.eye,
                 .direction=world_space_dir
             };
-            if(SHOW_WORLD_DIRECTION){
+            if(SHOW_WORLD_DIRECTION_MISSES){
                 G_rgb(SPREAD_COL3(vec3_normalized(world_space_dir)));
                 G_pixel(x, y);
             }

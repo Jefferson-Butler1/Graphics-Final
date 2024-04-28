@@ -6,7 +6,9 @@
 
 typedef struct {
     Vector3 position;
+    Vector3 position_static;
     Vector3 normal;
+    Vector3 normal_static;
 } Vertex;
 
 typedef struct {
