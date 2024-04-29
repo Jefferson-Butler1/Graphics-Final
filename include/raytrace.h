@@ -49,4 +49,7 @@ bool raytrace(RayHitInfo* out, Ray ray, int depth,
  * @brief exactly what you think
 */
 void invert_show_world_direction();
+void invert_show_triangle_normals();
+void invert_show_world_direction_misses();
+void invert_smooth_lighting_normals();
 #endif

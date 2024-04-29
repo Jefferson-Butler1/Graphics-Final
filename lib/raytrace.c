@@ -8,9 +8,14 @@
 #include "trig.h"
 #include "lightmodel.h"
 
-bool SHOW_WORLD_DIRECTION = true;
+bool SHOW_WORLD_DIRECTION = false;
+bool SHOW_TRIANGLE_NORMALS = false;
+bool SMOOTH_LIGHTING_NORMALS = false;
 bool SHOW_WORLD_DIRECTION_MISSES = false;
 void invert_show_world_direction(){ SHOW_WORLD_DIRECTION = !SHOW_WORLD_DIRECTION; }
+void invert_show_triangle_normals(){ SHOW_TRIANGLE_NORMALS = !SHOW_TRIANGLE_NORMALS; }
+void invert_smooth_lighting_normals(){ SMOOTH_LIGHTING_NORMALS = !SMOOTH_LIGHTING_NORMALS; }
+void invert_show_world_direction_misses(){ SHOW_WORLD_DIRECTION_MISSES = !SHOW_WORLD_DIRECTION_MISSES; }
 #define SHOW_MISSES 0
 
 int MAX_BOUNCES = 6;
@@ -145,15 +150,30 @@ bool raytrace  (RayHitInfo* out, Ray ray, int depth,
             for(int t = 0; t < mesh.num_tris; t++){
                 Triangle triangle = mesh.tris[t];
                 double t;
-                Vector2 barycentric;
-                if(intersect_triangle(&t, &barycentric, closest_t, ray, triangle)){
+                Vector2 surface_coords;
+                if(intersect_triangle(&t, &surface_coords, closest_t, ray, triangle)){
                     closest_t = t;
                     if(out == NULL) return true;
                     did_hit = true;
 
+                    //project incoming ray onto triangle normal
+                    double num = vec3_dot_prod(vec3_normalized(ray.origin), triangle.normal);
+                    double den = vec3_dot_prod(triangle.normal,triangle.normal);
+                    out->normal = vec3_normalized(vec3_scale(triangle.normal, num/den));
+                    if(SMOOTH_LIGHTING_NORMALS){
+                        Vector3 smooth_normal = vec3_add(
+                            vec3_scale(triangle.b->normal, surface_coords.x),
+                            vec3_scale(triangle.c->normal, surface_coords.y)
+                        );
+                        smooth_normal = vec3_add(smooth_normal, vec3_scale(triangle.a->normal, 1 - surface_coords.x - surface_coords.y));
+                        out->normal = smooth_normal;
+                    }
+
+
                     Vector3 obj_space_location = vec3_add(ray.origin, vec3_scale(ray.direction, t));
                     out->location = obj_space_location;
-                    out->normal = triangle.normal;
+                    
+                    // out->normal = triangle.normal;
                     Vector3 offset_location = vec3_add(out->location, vec3_scale(out->normal, 0.0000000001));
                     vec3_normalize(&out->normal);
                     
@@ -170,13 +190,16 @@ bool raytrace  (RayHitInfo* out, Ray ray, int depth,
                     bool hit = raytrace(&reflections, reflection_ray, depth - 1, objs, num_objs, meshes, num_meshes, false, lights, num_lights);
                     Color3 color = phong_lighting_eye(out->location, out->normal, ray.origin, mesh.material, lights, num_lights);
 
-                    out->color = vec3_add(
+                    out->color = vec3_add(  
                                     vec3_scale(color, mesh.roughness),
                                     vec3_scale(
                                         (hit ? 
                                         reflections.color : 
                                         SHOW_WORLD_DIRECTION ? 
                                             vec3_normalized(reflection_ray.direction) : 
+                                        SHOW_TRIANGLE_NORMALS ?
+                                            out->normal :
+                                        
                                             (Color3) {BLACK}
                                         ),
                                         1.0 - mesh.roughness)

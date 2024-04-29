@@ -223,5 +223,3 @@ Vector2 vec2_scale(Vector2 v, double scale){
 double vec2_dot_prod(Vector2 a, Vector2 b){
     return (a.x * b.x) + (a.y * b.y);
 }
-
-

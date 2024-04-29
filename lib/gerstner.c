@@ -87,7 +87,8 @@ void apply_water_simulation(Mesh* mesh,
     }
 
     // Update the mesh normals
-    compute_face_normals(mesh);
+    compute_plane_normals(mesh);
+    // compute_face_normals(mesh);
 
 }
 
